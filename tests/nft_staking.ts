@@ -16,9 +16,12 @@ describe("scum_staking_metadata", () => {
   const NFT_PDA_SEED = "nft";
 
   let mintA: Token = null;
+  let mintB: Token = null;
   let nftAccount: PublicKey = null;
+  let nftAccountB: PublicKey = null;
   let statePda: PublicKey = null;
   let nftMetadataPda: PublicKey = null;
+  let nftMetadataPdaB: PublicKey = null;
 
   //
   const payer = Keypair.generate();
@@ -44,8 +47,28 @@ describe("scum_staking_metadata", () => {
         provider.wallet.publicKey
     );
 
+    mintB = await Token.createMint(
+        provider.connection,
+        payer,
+        mintAuthority.publicKey,
+        null,
+        0,
+        TOKEN_PROGRAM_ID
+    );
+
+    nftAccountB = await mintB.createAccount(
+        provider.wallet.publicKey
+    );
+
     await mintA.mintTo(
         nftAccount,
+        mintAuthority.publicKey,
+        [mintAuthority],
+        1
+    );
+
+    await mintB.mintTo(
+        nftAccountB,
         mintAuthority.publicKey,
         [mintAuthority],
         1
@@ -90,6 +113,11 @@ describe("scum_staking_metadata", () => {
         program.programId
     );
 
+    [nftMetadataPdaB] = await anchor.web3.PublicKey.findProgramAddress(
+        [Buffer.from(NFT_PDA_SEED), nftAccountB.toBuffer()],
+        program.programId
+    );
+
 
     await program.rpc.registerNft(
         {
@@ -101,11 +129,25 @@ describe("scum_staking_metadata", () => {
             systemProgram: SystemProgram.programId,
             tokenProgram: TOKEN_PROGRAM_ID,
           },
+          instructions: [
+              program.instruction.registerNft(
+                  {
+                    accounts: {
+                      staker: provider.wallet.publicKey,
+                      nftAccount: nftAccountB,
+                      nftMetadataPda: nftMetadataPdaB,
+                      statePda: statePda,
+                      systemProgram: SystemProgram.programId,
+                      tokenProgram: TOKEN_PROGRAM_ID,
+                    }
+                  }
+              )
+          ]
         }
     );
 
     const _statePda = await program.account.stateAccount.fetch(statePda);
-    assert.ok(_statePda.numNftsRegistered.toNumber() == 1);
+    assert.ok(_statePda.numNftsRegistered.toNumber() == 2);
 
     const _nftMetadataPda = await program.account.nftMetadata.fetch(nftMetadataPda);
     assert.ok(_nftMetadataPda.isValid === true);
