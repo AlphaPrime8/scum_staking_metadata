@@ -3,7 +3,7 @@ use std;
 use anchor_lang;
 use anchor_spl::token::{Token, TokenAccount};
 
-declare_id!("HA1LGsASKrSnPiMCy4E6xPy49km8yYVdsvjVZerp71tB");
+declare_id!("E6m882zCThfmrDER7CpXVHxEdJovtzjMyvkErdzJhR7B");
 
 // config
 const MAX_NFTS_IN_COLLECTION: u64 = 6000;

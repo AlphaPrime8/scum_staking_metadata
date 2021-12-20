@@ -1,12 +1,12 @@
 [programs.localnet]
-scum_staking_metadata = "HA1LGsASKrSnPiMCy4E6xPy49km8yYVdsvjVZerp71tB"
+scum_staking_metadata = "E6m882zCThfmrDER7CpXVHxEdJovtzjMyvkErdzJhR7B"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-#cluster = "devnet"
-cluster = "localnet"
+cluster = "devnet"
+#cluster = "localnet"
 wallet = "/home/myware/.config/solana/devnet.json"
 
 [scripts]
