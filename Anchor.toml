@@ -1,0 +1,13 @@
+[programs.localnet]
+scum_staking_metadata = "HA1LGsASKrSnPiMCy4E6xPy49km8yYVdsvjVZerp71tB"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+#cluster = "devnet"
+cluster = "localnet"
+wallet = "/home/myware/.config/solana/devnet.json"
+
+[scripts]
+test = "yarn run ts-mocha -t 1000000 tests/*.ts"
