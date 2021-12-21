@@ -48,6 +48,13 @@ pub mod scum_staking_metadata {
         ctx.accounts.state_pda.registration_finalized = true;
         Ok(())
     }
+
+    pub fn reopen_registration(
+        ctx: Context<ReopenRegistration>,
+    ) -> ProgramResult {
+        ctx.accounts.state_pda.registration_finalized = false;
+        Ok(())
+    }
 }
 
 #[derive(Accounts)]
@@ -68,7 +75,7 @@ pub struct InitStatePda<'info> {
 pub struct RegisterNft<'info> {
     #[account(signer)]
     pub staker: AccountInfo<'info>,
-    #[account(mut)] //TODO consider add ownership constraint here so user owns nft...
+    #[account(mut)]
     pub nft_account: Account<'info, TokenAccount>,
     #[account(
     init,
@@ -87,6 +94,19 @@ pub struct RegisterNft<'info> {
 
 #[derive(Accounts)]
 pub struct CloseRegistration<'info> {
+    #[account(signer)] //TODO add contraint here so only I can open and close registration
+    pub signer: AccountInfo<'info>,
+    #[account(
+    mut,
+    seeds = [STATE_PDA_SEED],
+    bump)]
+    pub state_pda: Account<'info, StateAccount>,
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+}
+
+#[derive(Accounts)]
+pub struct ReopenRegistration<'info> {
     #[account(signer)] //TODO add contraint here so only I can open and close registration
     pub signer: AccountInfo<'info>,
     #[account(
